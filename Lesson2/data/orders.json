@@ -1,0 +1,25 @@
+{
+    "orders": [
+        {
+            "item": "Book",
+            "quantity": "1",
+            "price": "1000",
+            "buyer": "Shorh",
+            "date": "01.01.2019"
+        },
+        {
+            "item": "Book",
+            "quantity": "2",
+            "price": "1000",
+            "buyer": "Shorh",
+            "date": "01.01.2019"
+        },
+        {
+            "item": "Book",
+            "quantity": "3",
+            "price": "1000",
+            "buyer": "Shorh",
+            "date": "01.01.2019"
+        }
+    ]
+}
