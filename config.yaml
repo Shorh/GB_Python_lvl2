@@ -1,0 +1,4 @@
+encoding: utf-8
+host: localhost
+port: 8000
+buffer_size: 1024
