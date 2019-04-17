@@ -2,8 +2,13 @@ import json
 import yaml
 import socket
 import argparse
-import time
 
+from actions import (
+    resolve, get_server_actions
+)
+from protocol import (
+    validate_request, make_response, make_400, make_404
+)
 from settings import (
     HOST, PORT, BUFFER_SIZE, ENCODING
 )
@@ -45,25 +50,37 @@ try:
     sock = socket.socket()
     sock.bind((host, port))
     sock.listen(10)
+    server_actions = get_server_actions()
 
     print('Сервер запущен')
 
     while True:
         client, address = sock.accept()
-        print(f'Клиент с адресом { address } зафиксирован')
+        print(f'Клиент с адресом {address} зафиксирован')
 
-        time_req = time.ctime(time.time())
+        b_request = client.recv(buffer_size)
+        request = json.loads(b_request.decode(encoding))
+        action_name = request.get('action')
 
-        b_data = client.recv(buffer_size)
-        request = json.loads(b_data.decode(encoding))
+        if validate_request(request):
+            controller = resolve(action_name, server_actions)
+            if controller:
+                try:
+                    response = controller(request)
+                except Exception as err:
+                    print(err)
+                    response = make_response(
+                        request, 500, 'Internal server error'
+                    )
+            else:
+                print(f'Action with name {action_name} does not exist')
+                response = make_404(request)
+        else:
+            print(f'Request is no valid')
+            response = make_400(request)
 
-        response = json.dumps(
-            {
-                'response': 'Пользователь: ' + request['user']['username'] + '. Статус: ' + request['user']['status'],
-                'time': time_req
-            }
-        )
-        client.send(response.encode(encoding))
+        s_response = json.dumps(response)
+        client.send(s_response.encode(encoding))
 
         client.close()
 except KeyboardInterrupt:
