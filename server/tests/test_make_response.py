@@ -1,20 +1,20 @@
 from datetime import datetime
-from presence.controllers import get_presence
+from protocol import make_response
 
 
-def test_get_presence():
-    action_name = 'presence'
+def test_make_response():
+    action_name = 'msg'
     user = {
         'username': 'shorh',
         'status': 'on-line'
     }
-    data = 'Пользователь: shorh. Статус: on-line'
-    code = 200
+    data = 'Some data'
+    code = 400
 
     request = {
         'action': action_name,
         'user': user,
-        'time': datetime.now().timestamp()
+        'time': datetime.now().timestamp(),
     }
 
     expected = {
@@ -25,6 +25,6 @@ def test_get_presence():
         'code': code
     }
 
-    response = get_presence(request)
+    response = make_response(request, code, data)
 
     assert expected.get('data') == response.get('data')

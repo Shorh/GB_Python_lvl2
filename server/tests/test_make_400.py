@@ -1,17 +1,16 @@
 from datetime import datetime
-from echo.controllers import get_echo
+from protocol import make_400
 
 
-def test_get_echo():
-    action_name = 'echo'
+def test_make_400():
+    action_name = 'msg'
     user = None
-    data = 'Some data'
-    code = 200
+    data = 'Wrong request format'
+    code = 400
 
     request = {
         'action': action_name,
         'time': datetime.now().timestamp(),
-        'data': data,
     }
 
     expected = {
@@ -22,6 +21,7 @@ def test_get_echo():
         'code': code
     }
 
-    response = get_echo(request)
+    response = make_400(request)
 
     assert expected.get('data') == response.get('data')
+

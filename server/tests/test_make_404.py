@@ -1,17 +1,16 @@
 from datetime import datetime
-from echo.controllers import get_echo
+from protocol import make_404
 
 
-def test_get_echo():
-    action_name = 'echo'
+def test_make_404():
+    action_name = 'msg'
     user = None
-    data = 'Some data'
-    code = 200
+    data = 'Action is not supported'
+    code = 404
 
     request = {
         'action': action_name,
         'time': datetime.now().timestamp(),
-        'data': data,
     }
 
     expected = {
@@ -22,6 +21,6 @@ def test_get_echo():
         'code': code
     }
 
-    response = get_echo(request)
+    response = make_404(request)
 
     assert expected.get('data') == response.get('data')
