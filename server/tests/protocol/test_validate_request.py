@@ -1,17 +1,33 @@
+import pytest
+
 from datetime import datetime
 from protocol import validate_request
 
 
-def test_validate_request():
-    action_name = 'msg'
+@pytest.fixture
+def action_name():
+    return 'msg'
 
-    request = {
+
+@pytest.fixture
+def time():
+    return datetime.now().timestamp()
+
+
+@pytest.fixture
+def valid_request(action_name, time):
+    return {
         'action': action_name,
-        'time': datetime.now().timestamp(),
+        'time': time,
     }
 
-    expected = True
 
-    response = validate_request(request)
+@pytest.fixture
+def assert_response():
+    return True
 
-    assert expected == response
+
+def test_validate_request(valid_request, assert_response):
+    response = validate_request(valid_request)
+
+    assert assert_response == response

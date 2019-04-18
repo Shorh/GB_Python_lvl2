@@ -1,28 +1,62 @@
+import pytest
+
 from datetime import datetime
 from protocol import make_404
 
 
-def test_make_404():
-    action_name = 'msg'
-    user = None
-    data = 'Action is not supported'
-    code = 404
+@pytest.fixture
+def action_name():
+    return 'msg'
 
-    request = {
-        'action': action_name,
-        'time': datetime.now().timestamp(),
+
+@pytest.fixture
+def user():
+    print('Connected')
+    return {
+        'username': 'shorh',
+        'status': 'on-line'
     }
 
-    expected = {
+
+@pytest.fixture
+def time():
+    return datetime.now().timestamp()
+
+
+@pytest.fixture
+def data():
+    print('Connected')
+    return 'Action is not supported'
+
+
+@pytest.fixture
+def code():
+    return 404
+
+
+@pytest.fixture
+def valid_request(action_name, user, time):
+    return {
         'action': action_name,
         'user': user,
-        'time': None,
+        'time': time,
+    }
+
+
+@pytest.fixture
+def assert_response(action_name, user, time, data, code):
+    return {
+        'action': action_name,
+        'user': user,
+        'time': time,
         'data': data,
         'code': code
     }
 
-    response = make_404(request)
+
+def test_make_404(valid_request, assert_response):
+    response = make_404(valid_request)
 
     for name, value in response.items():
         if name != 'time':
-            assert expected.get('name') == response.get('name')
+            assert assert_response.get('name') == response.get('name')

@@ -26,7 +26,7 @@ def time():
 @pytest.fixture
 def data():
     print('Connected')
-    return 'Пользователь: shorh. Статус: on-line'
+    return 'Some data'
 
 
 @pytest.fixture
