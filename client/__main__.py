@@ -3,6 +3,9 @@ import yaml
 import socket
 import argparse
 import time
+import logging
+
+import log_config
 
 from settings import (
     HOST, PORT, BUFFER_SIZE, ENCODING
@@ -12,6 +15,8 @@ host = HOST
 port = PORT
 buffer_size = BUFFER_SIZE
 encoding = ENCODING
+
+logger = logging.getLogger('client')
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -32,14 +37,14 @@ try:
     sock = socket.socket()
     sock.connect((host, port))
 
-    print('Клиент запущен')
+    logger.info('Клиент запущен')
     username = input('Введите ваш логин: ')
 
     time_req = time.ctime(time.time())
 
     request = json.dumps(
         {
-            'action': 'presence',
+            'action': 'msg',
             'time': time_req,
             'user': {
                 'username': username,
@@ -55,7 +60,7 @@ try:
         b_data.decode(encoding)
     )
 
-    print(response)
+    logger.info(response)
     sock.close()
 except KeyboardInterrupt:
-    print('Клиент остановлен')
+    logger.info('Клиент остановлен')
