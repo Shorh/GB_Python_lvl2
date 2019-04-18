@@ -2,8 +2,8 @@ import json
 import yaml
 import socket
 import argparse
-import time
 
+from protocol import make_valid_response
 from settings import (
     HOST, PORT, BUFFER_SIZE, ENCODING
 )
@@ -50,20 +50,14 @@ try:
 
     while True:
         client, address = sock.accept()
-        print(f'Клиент с адресом { address } зафиксирован')
+        print(f'Клиент с адресом {address} зафиксирован')
 
-        time_req = time.ctime(time.time())
+        b_request = client.recv(buffer_size)
+        request = json.loads(b_request.decode(encoding))
 
-        b_data = client.recv(buffer_size)
-        request = json.loads(b_data.decode(encoding))
-
-        response = json.dumps(
-            {
-                'response': 'Пользователь: ' + request['user']['username'] + '. Статус: ' + request['user']['status'],
-                'time': time_req
-            }
-        )
-        client.send(response.encode(encoding))
+        response = make_valid_response(request)
+        s_response = json.dumps(response)
+        client.send(s_response.encode(encoding))
 
         client.close()
 except KeyboardInterrupt:
