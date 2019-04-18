@@ -1,7 +1,12 @@
+import logging
+
 from datetime import datetime
 from actions import (
     resolve, get_server_actions
 )
+
+
+logger = logging.getLogger('main')
 
 
 def validate_request(raw):
@@ -42,15 +47,15 @@ def make_valid_response(request):
             try:
                 response = controller(request)
             except Exception as err:
-                print(err)
+                logger.critical(err)
                 response = make_response(
                     request, 500, 'Internal server error'
                 )
         else:
-            print(f'Action with name {action_name} does not exist')
+            logger.error(f'Action with name {action_name} does not exist')
             response = make_404(request)
     else:
-        print(f'Request is no valid')
+        logger.error(f'Request is no valid')
         response = make_400(request)
 
     return response

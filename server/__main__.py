@@ -2,6 +2,7 @@ import json
 import yaml
 import socket
 import argparse
+import logging
 
 from protocol import make_valid_response
 from settings import (
@@ -41,16 +42,30 @@ if args.port:
 if args.address:
     host = args.address
 
+# logger
+logger = logging.getLogger('main')
+
+formatter = logging.Formatter(
+    '%(asctime)s - %(levelname)s - %(message)s'
+)
+
+handler = logging.FileHandler('info.log', encoding=ENCODING)
+handler.setLevel(logging.DEBUG)
+handler.setFormatter(formatter)
+
+logger.setLevel(logging.DEBUG)
+logger.addHandler(handler)
+
 try:
     sock = socket.socket()
     sock.bind((host, port))
     sock.listen(10)
 
-    print('Сервер запущен')
+    logger.info('Сервер запущен')
 
     while True:
         client, address = sock.accept()
-        print(f'Клиент с адресом {address} зафиксирован')
+        logger.info(f'Клиент с адресом {address} зафиксирован')
 
         b_request = client.recv(buffer_size)
         request = json.loads(b_request.decode(encoding))
@@ -61,4 +76,4 @@ try:
 
         client.close()
 except KeyboardInterrupt:
-    print('Сервер остановлен')
+    logger.info('Сервер остановлен')
