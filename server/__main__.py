@@ -3,7 +3,7 @@ import yaml
 import socket
 import argparse
 
-from response import make_valid_response
+from protocol import make_valid_response
 from settings import (
     HOST, PORT, BUFFER_SIZE, ENCODING
 )

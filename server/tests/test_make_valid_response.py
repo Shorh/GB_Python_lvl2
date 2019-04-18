@@ -1,5 +1,5 @@
 from datetime import datetime
-from response import make_valid_response
+from protocol import make_valid_response
 
 
 def test_make_valid_response():
