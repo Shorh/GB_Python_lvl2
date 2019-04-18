@@ -41,10 +41,17 @@ if args.config:
         port = conf.get('port', PORT)
         buffer_size = conf.get('buffer_size', BUFFER_SIZE)
         encoding = conf.get('encoding', ENCODING)
+
+        logger.info(f'host {host}')
+        logger.info(f'port {port}')
+        logger.info(f'buffer_size {buffer_size}')
+        logger.info(f'encoding {encoding}')
 if args.port:
     port = args.port
+    logger.info(f'port {port}')
 if args.address:
     host = args.address
+    logger.info(f'host {host}')
 
 try:
     sock = socket.socket()
