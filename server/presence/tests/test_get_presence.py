@@ -27,4 +27,6 @@ def test_get_presence():
 
     response = get_presence(request)
 
-    assert expected.get('data') == response.get('data')
+    for name, value in response.items():
+        if name != 'time':
+            assert expected.get('name') == response.get('name')

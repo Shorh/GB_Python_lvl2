@@ -23,4 +23,6 @@ def test_make_404():
 
     response = make_404(request)
 
-    assert expected.get('data') == response.get('data')
+    for name, value in response.items():
+        if name != 'time':
+            assert expected.get('name') == response.get('name')

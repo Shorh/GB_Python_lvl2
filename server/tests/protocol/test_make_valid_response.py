@@ -27,4 +27,6 @@ def test_make_valid_response():
 
     response = make_valid_response(request)
 
-    assert expected.get('data') == response.get('data')
+    for name, value in response.items():
+        if name != 'time':
+            assert expected.get('name') == response.get('name')
