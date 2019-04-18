@@ -6,7 +6,7 @@ from actions import (
 )
 
 
-logger = logging.getLogger('main')
+logger = logging.getLogger('server')
 
 
 def validate_request(raw):

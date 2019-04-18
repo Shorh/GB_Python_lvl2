@@ -4,6 +4,8 @@ import socket
 import argparse
 import logging
 
+import log_config
+
 from protocol import make_valid_response
 from settings import (
     HOST, PORT, BUFFER_SIZE, ENCODING
@@ -14,6 +16,8 @@ host = HOST
 port = PORT
 buffer_size = BUFFER_SIZE
 encoding = ENCODING
+
+logger = logging.getLogger('server')
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -41,20 +45,6 @@ if args.port:
     port = args.port
 if args.address:
     host = args.address
-
-# logger
-logger = logging.getLogger('main')
-
-formatter = logging.Formatter(
-    '%(asctime)s - %(levelname)s - %(message)s'
-)
-
-handler = logging.FileHandler('info.log', encoding=ENCODING)
-handler.setLevel(logging.DEBUG)
-handler.setFormatter(formatter)
-
-logger.setLevel(logging.DEBUG)
-logger.addHandler(handler)
 
 try:
     sock = socket.socket()
