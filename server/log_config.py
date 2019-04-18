@@ -1,5 +1,7 @@
 import logging
 
+from logging.handlers import TimedRotatingFileHandler
+
 from settings import ENCODING
 
 
@@ -12,7 +14,10 @@ formatter = logging.Formatter(
 )
 
 # Файловый обработчик логирования
-handler = logging.FileHandler('server_log_config.log', encoding=ENCODING)
+handler = TimedRotatingFileHandler('server_log_config.log',
+                                   encoding=ENCODING,
+                                   when='D',
+                                   backupCount=3)
 handler.setLevel(logging.DEBUG)
 handler.setFormatter(formatter)
 
