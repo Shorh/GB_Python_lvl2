@@ -19,7 +19,8 @@ def get_server_actions():
 
 
 def resolve(action, action_names=None):
-    return reduce(
-        lambda value, item: item.get('controller') if item.get('action') == action else None,
-        action_names or get_server_actions(),
-    )
+    for item in action_names or get_server_actions():
+        if item.get('action') == action:
+            return item.get('controller')
+
+    return None
