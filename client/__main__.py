@@ -2,7 +2,7 @@ import json
 import yaml
 import socket
 import argparse
-import time
+from datetime import datetime
 import logging
 
 from logging.handlers import TimedRotatingFileHandler
@@ -22,7 +22,8 @@ logging.basicConfig(
         TimedRotatingFileHandler('client_log_config.log',
                                  encoding=ENCODING,
                                  when='D',
-                                 backupCount=3)
+                                 backupCount=3),
+        logging.StreamHandler()
     ]
 )
 
@@ -47,12 +48,13 @@ try:
 
     logging.info('Клиент запущен')
     username = input('Введите ваш логин: ')
+    action = input('Введите имя action: ')
 
-    time_req = time.ctime(time.time())
+    time_req = datetime.now().timestamp()
 
     request = json.dumps(
         {
-            'action': 'presence',
+            'action': action,
             'time': time_req,
             'user': {
                 'username': username,
