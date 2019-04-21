@@ -2,8 +2,10 @@ import json
 import yaml
 import socket
 import argparse
-import time
+from datetime import datetime
+import logging
 
+from logging.handlers import TimedRotatingFileHandler
 from settings import (
     HOST, PORT, BUFFER_SIZE, ENCODING
 )
@@ -12,6 +14,18 @@ host = HOST
 port = PORT
 buffer_size = BUFFER_SIZE
 encoding = ENCODING
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(module)s - %(message)s',
+    handlers=[
+        TimedRotatingFileHandler('client_log_config.log',
+                                 encoding=ENCODING,
+                                 when='D',
+                                 backupCount=3),
+        logging.StreamHandler()
+    ]
+)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -32,14 +46,15 @@ try:
     sock = socket.socket()
     sock.connect((host, port))
 
-    print('Клиент запущен')
+    logging.info('Клиент запущен')
     username = input('Введите ваш логин: ')
+    action = input('Введите имя action: ')
 
-    time_req = time.ctime(time.time())
+    time_req = datetime.now().timestamp()
 
     request = json.dumps(
         {
-            'action': 'presence',
+            'action': action,
             'time': time_req,
             'user': {
                 'username': username,
@@ -55,7 +70,7 @@ try:
         b_data.decode(encoding)
     )
 
-    print(response)
+    logging.info(response)
     sock.close()
 except KeyboardInterrupt:
-    print('Клиент остановлен')
+    logging.info('Клиент остановлен')
