@@ -6,9 +6,6 @@ from actions import (
 )
 
 
-logger = logging.getLogger('server')
-
-
 def validate_request(raw):
     request_time = raw.get('time')
     request_action = raw.get('action')
@@ -47,15 +44,15 @@ def make_valid_response(request):
             try:
                 response = controller(request)
             except Exception as err:
-                logger.critical(err)
+                logging.critical(err)
                 response = make_response(
                     request, 500, 'Internal server error'
                 )
         else:
-            logger.error(f'Action with name {action_name} does not exist')
+            logging.error(f'Action with name {action_name} does not exist')
             response = make_404(request)
     else:
-        logger.error(f'Request is no valid')
+        logging.error(f'Request is no valid')
         response = make_400(request)
 
     return response

@@ -4,7 +4,7 @@ import socket
 import argparse
 import logging
 
-import log_config
+from logging.handlers import TimedRotatingFileHandler
 
 from protocol import make_valid_response
 from settings import (
@@ -17,7 +17,16 @@ port = PORT
 buffer_size = BUFFER_SIZE
 encoding = ENCODING
 
-logger = logging.getLogger('server')
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(asctime)s - %(levelname)s - %(module)s - %(message)s',
+    handlers=[
+        TimedRotatingFileHandler('server_log_config.log',
+                                 encoding=ENCODING,
+                                 when='D',
+                                 backupCount=3),
+    ]
+)
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -42,27 +51,27 @@ if args.config:
         buffer_size = conf.get('buffer_size', BUFFER_SIZE)
         encoding = conf.get('encoding', ENCODING)
 
-        logger.info(f'host {host}')
-        logger.info(f'port {port}')
-        logger.info(f'buffer_size {buffer_size}')
-        logger.info(f'encoding {encoding}')
+        logging.info(f'host {host}')
+        logging.info(f'port {port}')
+        logging.info(f'buffer_size {buffer_size}')
+        logging.info(f'encoding {encoding}')
 if args.port:
     port = args.port
-    logger.info(f'port {port}')
+    logging.info(f'port {port}')
 if args.address:
     host = args.address
-    logger.info(f'host {host}')
+    logging.info(f'host {host}')
 
 try:
     sock = socket.socket()
     sock.bind((host, port))
     sock.listen(10)
 
-    logger.info('Сервер запущен')
+    logging.info('Сервер запущен')
 
     while True:
         client, address = sock.accept()
-        logger.info(f'Клиент с адресом {address} зафиксирован')
+        logging.info(f'Клиент с адресом {address} зафиксирован')
 
         b_request = client.recv(buffer_size)
         request = json.loads(b_request.decode(encoding))
@@ -73,4 +82,4 @@ try:
 
         client.close()
 except KeyboardInterrupt:
-    logger.info('Сервер остановлен')
+    logging.info('Сервер остановлен')
