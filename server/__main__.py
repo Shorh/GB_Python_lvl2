@@ -25,6 +25,7 @@ logging.basicConfig(
                                  encoding=ENCODING,
                                  when='D',
                                  backupCount=3),
+        logging.StreamHandler()
     ]
 )
 
