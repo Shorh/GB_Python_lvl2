@@ -3,6 +3,7 @@ from functools import reduce
 
 from presence import actions as presence
 from echo import actions as echo
+from errors import actions as errors
 from actions import get_server_actions
 
 
@@ -11,6 +12,7 @@ def modules():
     return [
         echo,
         presence,
+        errors,
     ]
 
 
