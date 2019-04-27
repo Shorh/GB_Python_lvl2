@@ -6,7 +6,7 @@ import logging
 
 from logging.handlers import TimedRotatingFileHandler
 
-from protocol import make_valid_response
+from handlers import handle_default_request
 from settings import (
     HOST, PORT, BUFFER_SIZE, ENCODING
 )
@@ -75,11 +75,8 @@ try:
         logging.info(f'Клиент с адресом {address} зафиксирован')
 
         b_request = client.recv(buffer_size)
-        request = json.loads(b_request.decode(encoding))
-
-        response = make_valid_response(request)
-        s_response = json.dumps(response)
-        client.send(s_response.encode(encoding))
+        b_response = handle_default_request(b_request)
+        client.send(b_response)
 
         client.close()
 except KeyboardInterrupt:
