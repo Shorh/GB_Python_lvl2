@@ -20,7 +20,7 @@ def logged(func):
 def login_required(func):
     @wraps(func)
     def wrapper(request, *args, **kwargs):
-        if request.get('user'):
+        if request.get('user').get('username'):
             return func(request, *args, **kwargs)
         return make_403(request)
 
