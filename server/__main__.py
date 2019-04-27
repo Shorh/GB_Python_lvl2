@@ -1,8 +1,8 @@
-import json
 import yaml
 import socket
 import argparse
 import logging
+import select
 
 from logging.handlers import TimedRotatingFileHandler
 
@@ -63,21 +63,38 @@ if args.address:
     host = args.address
     logging.info(f'host {host}')
 
+requests = []
+connections = []
+
 try:
     sock = socket.socket()
     sock.bind((host, port))
+    sock.settimeout(0)
     sock.listen(10)
 
     logging.info('Сервер запущен')
 
     while True:
-        client, address = sock.accept()
-        logging.info(f'Клиент с адресом {address} зафиксирован')
+        try:
+            client, address = sock.accept()
+            logging.info(f'Клиент с адресом {address} зафиксирован')
+            connections.append(client)
+        except Exception:
+            pass
 
-        b_request = client.recv(buffer_size)
-        b_response = handle_default_request(b_request)
-        client.send(b_response)
+        r_list, w_list, x_list = select.select(
+            connections, connections, connections, 0
+        )
 
-        client.close()
+        for r_client in r_list:
+            b_request = r_client.recv(buffer_size)
+            requests.append(b_request)
+
+        if requests:
+            b_request = requests.pop()
+            b_response = handle_default_request(b_request)
+
+            for w_client in w_list:
+                w_client.send(b_response)
 except KeyboardInterrupt:
     logging.info('Сервер остановлен')
