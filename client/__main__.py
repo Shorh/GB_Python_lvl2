@@ -2,6 +2,8 @@ import json
 import yaml
 import socket
 import argparse
+import hashlib
+
 from datetime import datetime
 import logging
 
@@ -47,6 +49,12 @@ try:
     sock.connect((host, port))
 
     logging.info('Клиент запущен')
+
+    hash_obj = hashlib.sha256()
+    hash_obj.update(
+        str(datetime.now().timestamp()).encode(ENCODING)
+    )
+
     username = input('Введите ваш логин: ')
     action = input('Введите имя action: ')
 
@@ -58,7 +66,8 @@ try:
             'time': time_req,
             'user': {
                 'username': username,
-                'status': 'on-line'
+                'status': 'on-line',
+                'token': hash_obj.hexdigest()
             }
         }
     )
