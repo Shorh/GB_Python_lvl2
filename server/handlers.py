@@ -33,4 +33,5 @@ def handle_default_request(row_request):
         logging.error(f'Request is no valid')
         response = make_400(request)
 
-    return json.dumps(response).encode(ENCODING)
+    row_response = json.dumps(response).encode(ENCODING)
+    return row_response
