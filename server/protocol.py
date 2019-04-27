@@ -1,9 +1,9 @@
 from datetime import datetime
 
 
-def validate_request(raw):
-    request_time = raw.get('time')
-    request_action = raw.get('action')
+def validate_request(request):
+    request_time = request.get('time')
+    request_action = request.get('action')
 
     if request_time and request_action:
         return True
