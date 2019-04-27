@@ -34,6 +34,10 @@ def make_404(request):
     return make_response(request, 404, 'Action is not supported')
 
 
+def make_403(request):
+    return make_response(request, 403, 'Access denied')
+
+
 def make_valid_response(request):
     server_actions = get_server_actions()
     action_name = request.get('action')
