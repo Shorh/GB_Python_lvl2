@@ -1,4 +1,5 @@
 import logging
+import zlib
 
 from functools import wraps
 
@@ -23,5 +24,15 @@ def login_required(func):
         if request.get('user').get('token'):
             return func(request, *args, **kwargs)
         return make_403(request)
+
+    return wrapper
+
+
+def compressed(func):
+    @wraps(func)
+    def wrapper(request, *args, **kwargs):
+        b_request = zlib.decompress(request)
+        b_response = func(b_request, *args, **kwargs)
+        return zlib.compress(b_response)
 
     return wrapper

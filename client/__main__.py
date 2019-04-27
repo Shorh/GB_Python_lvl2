@@ -3,6 +3,7 @@ import yaml
 import socket
 import argparse
 import hashlib
+import zlib
 
 from datetime import datetime
 import logging
@@ -72,11 +73,13 @@ try:
         }
     )
 
-    sock.send(request.encode(encoding))
+    sock.send(zlib.compress(request.encode(encoding)))
     b_data = sock.recv(buffer_size)
 
+    b_response = zlib.decompress(b_data)
+
     response = json.loads(
-        b_data.decode(encoding)
+        b_response.decode(encoding)
     )
 
     logging.info(response)

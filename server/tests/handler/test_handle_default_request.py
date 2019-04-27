@@ -1,5 +1,6 @@
 import pytest
 import json
+import zlib
 
 from datetime import datetime
 from handlers import handle_default_request
@@ -42,7 +43,7 @@ def valid_request(action_name, user, time):
         'user': user,
         'time': time,
     }
-    return json.dumps(request).encode(ENCODING)
+    return zlib.compress(json.dumps(request).encode(ENCODING))
 
 
 @pytest.fixture
@@ -57,8 +58,8 @@ def assert_response(action_name, user, time, data, code):
 
 
 def test_make_valid_response(valid_request, assert_response):
-    b_response = handle_default_request(valid_request)
-    response = json.loads(b_response.decode(ENCODING))
+    z_response = handle_default_request(valid_request)
+    response = json.loads(zlib.decompress(z_response).decode(ENCODING))
 
     for name, value in response.items():
         if name != 'time':

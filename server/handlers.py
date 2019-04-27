@@ -8,8 +8,10 @@ from protocol import (
     validate_request, make_response, make_400, make_404
 )
 from settings import ENCODING
+from decorators import compressed
 
 
+@compressed
 def handle_default_request(row_request):
     request = json.loads(row_request.decode(ENCODING))
 
