@@ -3,6 +3,7 @@ import socket
 import argparse
 import logging
 import select
+import threading
 
 from logging.handlers import TimedRotatingFileHandler
 
@@ -66,6 +67,16 @@ if args.address:
 requests = []
 connections = []
 
+
+def read(r_clt, req, buff_size):
+    b_req = r_clt.recv(buff_size)
+    req.append(b_req)
+
+
+def write(w_clt, b_resp):
+    w_clt.send(b_resp)
+
+
 try:
     sock = socket.socket()
     sock.bind((host, port))
@@ -87,14 +98,24 @@ try:
         )
 
         for r_client in r_list:
-            b_request = r_client.recv(buffer_size)
-            requests.append(b_request)
+            r_thread = threading.Thread(
+                target=read,
+                args=(r_client, requests, buffer_size),
+                daemon=True
+            )
+            r_thread.start()
 
         if requests:
             b_request = requests.pop()
             b_response = handle_default_request(b_request)
 
             for w_client in w_list:
-                w_client.send(b_response)
+                w_thread = threading.Thread(
+                    target=write,
+                    args=(w_client, b_response),
+                    daemon=True
+                )
+                w_thread.start()
+
 except KeyboardInterrupt:
     logging.info('Сервер остановлен')
