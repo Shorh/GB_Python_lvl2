@@ -2,6 +2,9 @@ import json
 import yaml
 import socket
 import argparse
+import hashlib
+import zlib
+
 from datetime import datetime
 import logging
 
@@ -32,6 +35,9 @@ parser.add_argument(
     '-c', '--config', type=str,
     help='Sets run configuration'
 )
+parser.add_argument(
+    '-m', '--mode', type=str, default='w'
+)
 args = parser.parse_args()
 
 if args.config:
@@ -42,35 +48,51 @@ if args.config:
         buffer_size = conf.get('buffer_size', BUFFER_SIZE)
         encoding = conf.get('encoding', ENCODING)
 
+sock = None
+
 try:
     sock = socket.socket()
     sock.connect((host, port))
 
     logging.info('Клиент запущен')
-    username = input('Введите ваш логин: ')
-    action = input('Введите имя action: ')
 
-    time_req = datetime.now().timestamp()
+    if args.mode == 'w':
+        while True:
+            hash_obj = hashlib.sha256()
+            hash_obj.update(
+                str(datetime.now().timestamp()).encode(ENCODING)
+            )
 
-    request = json.dumps(
-        {
-            'action': action,
-            'time': time_req,
-            'user': {
-                'username': username,
-                'status': 'on-line'
-            }
-        }
-    )
+            username = input('Введите ваш логин: ')
+            action = input('Введите имя action: ')
 
-    sock.send(request.encode(encoding))
-    b_data = sock.recv(buffer_size)
+            time_req = datetime.now().timestamp()
 
-    response = json.loads(
-        b_data.decode(encoding)
-    )
+            request = json.dumps(
+                {
+                    'action': action,
+                    'time': time_req,
+                    'user': {
+                        'username': username,
+                        'status': 'on-line',
+                        'token': hash_obj.hexdigest()
+                    }
+                }
+            )
 
-    logging.info(response)
-    sock.close()
+            sock.send(zlib.compress(request.encode(encoding)))
+    else:
+        while True:
+            b_data = sock.recv(buffer_size)
+
+            b_response = zlib.decompress(b_data)
+
+            response = json.loads(
+                b_response.decode(encoding)
+            )
+
+            logging.info(response)
 except KeyboardInterrupt:
     logging.info('Клиент остановлен')
+    if sock:
+        sock.close()
